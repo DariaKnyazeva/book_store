@@ -28,6 +28,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('users/', include('users.urls')),
     path('', include('ui.urls')),
+    path('book/', include('books.urls')),
 
     path(f'api/{API_VERSION}/book/', include('books.api.urls')),
     path(f'api/{API_VERSION}/pricing/', include('pricing.api.urls')),
