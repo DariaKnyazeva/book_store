@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block extra_head %}{{ search_form.media }}{% endblock %}
+
+{% block title %}All Books{% endblock %}
+
+{% block page_title %}All Books{% endblock %}
+
+{% block extra_js %}
+
+        const target_url = "{% url 'books:book-rent' %}";
+        let csrf_token = "{{ csrf_token }}";
+
+        function rent(book_id) {
+             $.ajax({ method: "POST", url: target_url, data: { book: book_id,
+                     csrfmiddlewaretoken: csrf_token},
+                     success: function (result) {alert("Book rented")}});
+        }
+
+{% endblock %}
+
+{% block content %}
+             
+         <div class="panel panel-default">
+         <div class="panel-heading">Filter or Search Books</div>
+         <div class="panel-body">
+            {% crispy search_form search_form.helper %}  
+         </div>
+         </div>
+         
+          
+        <table class="table table-hover" id="id_book_list">
+            <thead>
+                 <th><input type="checkbox" class="select_all_objects"></input></th>
+                 <th>Title</th>    
+                 <th></th>         
+            </thead>
+            <tbody>
+               {% for book in object_list %}
+                  {% if book %}
+                  
+                    <tr>
+                        <td><input type="checkbox" class="selected_objects" data="{{ book.id }}"></input></td>                       
+                        <td>{{ book }}</td>
+                        <td><a class="btn btn-sm btn-primary"
+                              id="btn-{{ book.id }}"
+                              onclick="rent({{ book.id }})"
+                              href="#">
+                              <i class="fa fa-book"></i> Rent
+                            </a>                          
+                        </td>
+                    </tr>
+                  
+                  {% endif %}
+                {% empty %}
+                    <tr><td colspan="3">No books found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        {% if is_paginated %}            
+            {% include 'base/pagination.html' %}            
+        {% endif %}
+{% endblock %}
