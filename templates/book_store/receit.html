@@ -1,0 +1,48 @@
+
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block extra_head %}{{ search_form.media }}{% endblock %}
+
+{% block title %}My Receit{% endblock %}
+
+{% block page_title %}My Receit{% endblock %}
+
+
+
+{% block content %}
+             
+         <div class="panel panel-default">
+         <div class="panel-heading"></div>
+         <div class="panel-body">
+             {{ price }}
+         </div>
+         </div>
+
+        
+        {% if rented_books %}
+        <table class="table table-hover" id="id_book_list">
+            <thead>
+                 <th>Title</th>           
+            </thead>
+            <tbody>
+               {% for book in rented_books %}
+                  <tr>
+                                              
+                        <td>{{ book }}</td>
+                       
+                </tr>
+                {% empty %}
+                <tr><td>No Rents found.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p>No Rents found.</p>
+        {% endif %}
+
+        {% if is_paginated %}            
+            {% include 'base/pagination.html' %}            
+        {% endif %}
+{% endblock %}

@@ -1,10 +1,12 @@
 # from django_filters.views import FilterView
 from django.conf import settings
 from django.shortcuts import redirect
+from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.urls import reverse
 
-from books.models import Book
+from books.models import Book, BookRent
+from .recipe import Recipe
 from .forms import BookSearchForm
 
 
@@ -79,3 +81,18 @@ class BookListView(SearchViewMixin, ListView):
     # def dispatch(self, *args, **kwargs):
     #     import ipdb; ipdb.set_trace()
     #     return super().dispatch(*args, **kwargs)
+
+
+class ReceitView(TemplateView):
+    template_name = 'book_store/receit.html'
+    form_class = BookSearchForm
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['rented_books'] = self.recipe.rents
+        context['price'] = self.recipe.get_price()
+        return context
+
+    def dispatch(self, *args, **kwargs):
+        self.recipe = Recipe(self.request.user)
+        return super().dispatch(*args, **kwargs)
