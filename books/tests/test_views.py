@@ -1,13 +1,26 @@
 from model_mommy import mommy
 
+from django.contrib.auth import get_user_model
 from django.conf import settings
 from django.test import TestCase
 from django.urls import reverse
 
 from books.models import Book
 
+User = get_user_model()
+
 
 class TestBookListView(TestCase):
+    def setUp(self):
+        password = "helloworld123"
+        user = User.objects.create(is_active=True, username="test", user_role=1, password=password)
+
+        user.set_password(password)
+        user.save()
+
+        lg = self.client.login(username=user.username, password=password)
+        self.assertTrue(lg)
+
     def test_list_no_books(self):
         url = reverse('books:book-list')
         response = self.client.get(url)
@@ -46,3 +59,7 @@ class TestBookListView(TestCase):
         self.assertFalse("No books found" in str(response.content))
         self.assertFalse("Alice" in str(response.content))
         self.assertTrue("ZZZ" in str(response.content))
+
+
+class TestReceitView(TestCase):
+    pass

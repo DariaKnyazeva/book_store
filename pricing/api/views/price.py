@@ -1,6 +1,6 @@
 
 from pricing.api.serializers.price import PriceSerializer
-from pricing.models import Price
+from pricing.models import Category
 
 from rest_framework import generics
 
@@ -13,9 +13,9 @@ __all__ = [
 
 class ListCreatePriceView(generics.ListCreateAPIView):
     serializer_class = PriceSerializer
-    queryset = Price.objects.all()
+    queryset = Category.objects.all()
 
 
 class RetrievePriceView(generics.RetrieveAPIView):
     serializer_class = PriceSerializer
-    queryset = Price.objects.all()
+    queryset = Category.objects.all()
