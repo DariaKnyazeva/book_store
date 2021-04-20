@@ -12,7 +12,7 @@ __all__ = [
 
 class BaseView:
     serializer_class = BookRentSerializer
-    queryset = BookRent.objects.all().select_related('book', 'customer', 'price').order_by('-id')
+    queryset = BookRent.objects.all().select_related('book', 'customer').order_by('-id')
 
     def get_queryset(self):
         queryset = super().get_queryset()

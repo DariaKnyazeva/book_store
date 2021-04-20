@@ -42,3 +42,16 @@ class Price(models.Model):
     currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
     period = models.PositiveSmallIntegerField(choices=PRICE_PERIODS,
                                               default=PricePeriod.DAY)
+
+    class Meta:
+        abstract = True
+
+
+class Category(Price):
+    name = models.CharField(max_length=100)
+
+    class Meta:
+        ordering = ["name", ]
+
+    def __str__(self):
+        return self.name

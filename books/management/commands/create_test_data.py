@@ -1,5 +1,5 @@
 from books.models import Book, BookRent
-from pricing.models import Currency, Price
+from pricing.models import Currency, Category
 from users.models import User
 
 from django.core.management.base import BaseCommand
@@ -15,10 +15,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         BookRent.objects.all().delete()
         Book.objects.all().delete()
-        Price.objects.all().delete()
+        Category.objects.all().delete()
 
         currency = Currency.get_default_currency()
-        price, _cr = Price.objects.get_or_create(currency=currency, amount=1)
+        price, _cr = Category.objects.get_or_create(currency=currency, amount=1, name="novel")
 
         now = timezone.now()
         User.objects.get(username="daria").delete()
@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         fake = Faker()
         Book.objects.bulk_create([
-            Book(title=fake.sentence())
+            Book(title=fake.sentence(), price=price)
             for _ in range(10_000)
         ])
 

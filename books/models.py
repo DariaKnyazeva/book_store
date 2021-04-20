@@ -2,14 +2,18 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 
+from pricing.models import Category
+
 
 # class Author(models.Model):
 #     name = models.CharField(max_length=255)
 
 # TODO: add Author later
 
+
 class Book(models.Model):
     title = models.CharField(max_length=255)
+    category = models.ForeignKey('pricing.Category', on_delete=models.CASCADE)
     # author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     class Meta:
@@ -34,7 +38,6 @@ class BookRent(models.Model):
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     book = models.ForeignKey(Book, on_delete=models.PROTECT)
     created = models.DateField(auto_now_add=True)
-    price = models.ForeignKey('pricing.Price', on_delete=models.PROTECT)
     end_date = models.DateField(null=True)
     status = models.PositiveSmallIntegerField(default=Status.PENDING)
 

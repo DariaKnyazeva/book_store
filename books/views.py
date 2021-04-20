@@ -7,7 +7,6 @@ from django.views.generic.list import ListView
 from django.urls import reverse
 
 from books.models import Book, BookRent
-from pricing.models import Currency, Price
 from .recipe import Recipe
 from .forms import BookSearchForm
 
@@ -96,10 +95,8 @@ class BookRentView(TemplateView):
         book = get_object_or_404(Book, id=book_id)
         # books = request.POST.getlist('book[]')
 
-        currency = Currency.get_default_currency()
-        price, _ = Price.objects.get_or_create(amount=1, currency=currency)
         BookRent.objects.create(customer=request.user, book=book,
-                                price=price, status=BookRent.Status.RENTED)
+                                status=BookRent.Status.RENTED)
         return HttpResponse('OK')
 
 

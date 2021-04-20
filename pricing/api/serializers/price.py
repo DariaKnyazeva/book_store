@@ -1,11 +1,11 @@
-from pricing.models import Price
+from pricing.models import Category
 
 from rest_framework import serializers
 
 
 class PriceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
-        model = Price
+        model = Category
         fields = (
-            'id', 'amount', 'currency', 'period',
+            'id', 'amount', 'currency', 'period', 'name'
         )

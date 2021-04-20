@@ -13,7 +13,7 @@ class Recipe:
         self.customer = customer
         self.rents = BookRent.objects.filter(customer=self.customer,
                                              status=BookRent.Status.RENTED).\
-            select_related('price', 'book')
+            select_related('book', 'book__category')
 
     def caclulate_price(self):
         """
@@ -22,7 +22,7 @@ class Recipe:
         Per day rental charge is $ 1.
         """
         today = timezone.now().date()
-        return sum([((today - rent.created).days + 1) * rent.price.amount for rent in self.rents])
+        return sum([((today - rent.created).days + 1) * rent.book.category.amount for rent in self.rents])
 
     def get_price(self):
         """
