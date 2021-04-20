@@ -15,7 +15,7 @@ def signup_customer(request):
             user = form.save(commit=False)
             username = form.cleaned_data.get('username')
             raw_password = form.cleaned_data.get('password1')
-            user = User.objects.create_coach(username, password=raw_password)
+            user = User.objects.create_customer(username, password=raw_password)
             user = authenticate(username=username, password=raw_password)
             login(request, user)
             return redirect('/')

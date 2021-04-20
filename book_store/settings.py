@@ -40,6 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'bootstrap4',
+    'rest_framework',
+    'drf_yasg',
 
     'books.apps.BooksConfig',
     'pricing.apps.PricingConfig',
