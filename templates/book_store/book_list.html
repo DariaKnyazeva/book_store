@@ -9,9 +9,16 @@
 {% block page_title %}All Books{% endblock %}
 
 {% block extra_js %}
-<script>
-    $(".search-query").attr('title', 'Search by Title');
-</script>
+
+        const target_url = "{% url 'books:book-rent' %}";
+        let csrf_token = "{{ csrf_token }}";
+
+        function rent(book_id) {
+             $.ajax({ method: "POST", url: target_url, data: { book: book_id,
+                     csrfmiddlewaretoken: csrf_token},
+                     success: function (result) {alert("Book rented")}});
+        }
+
 {% endblock %}
 
 {% block content %}
@@ -38,7 +45,9 @@
                         <td><input type="checkbox" class="selected_objects" data="{{ book.id }}"></input></td>                       
                         <td>{{ book }}</td>
                         <td><a class="btn btn-sm btn-primary"
-                              href="">
+                              id="btn-{{ book.id }}"
+                              onclick="rent({{ book.id }})"
+                              href="#">
                               <i class="fa fa-book"></i> Rent
                             </a>                          
                         </td>

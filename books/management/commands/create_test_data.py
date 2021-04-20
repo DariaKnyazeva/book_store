@@ -15,9 +15,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         BookRent.objects.all().delete()
         Book.objects.all().delete()
+        Price.objects.all().delete()
 
         currency = Currency.get_default_currency()
-        price = Price.objects.create(currency=currency, amount=1)
+        price, _cr = Price.objects.get_or_create(currency=currency, amount=1)
 
         now = timezone.now()
         User.objects.get(username="daria").delete()
