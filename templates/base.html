@@ -51,9 +51,6 @@
         <div class="navbar-collapse collapse">
             <ul class="nav navbar-nav navbar-right">
                     {% if user.is_authenticated %}                      
-                          <li class="{% if '/users/{{user.id}}/edit/' in request.get_full_path %}active{% endif %}">  
-                              <a  href="#"><i class="fa fa-male"></i> Profile</a>
-                          </li>
                           <li> <a href="{% url 'logout'%}"><i class="fa fa-sign-out"></i> Sign out</a></li>                        
                     {% else %}                      
                         <li>

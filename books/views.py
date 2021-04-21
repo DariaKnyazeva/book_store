@@ -1,7 +1,7 @@
 # from django_filters.views import FilterView
 from django.conf import settings
-from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse
+from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 from django.urls import reverse
@@ -78,10 +78,6 @@ class BookListView(SearchViewMixin, ListView):
 
     def get_pagination_url(self):
         return reverse('books:book-list')
-
-    # def dispatch(self, *args, **kwargs):
-    #     import ipdb; ipdb.set_trace()
-    #     return super().dispatch(*args, **kwargs)
 
 
 class BookRentView(TemplateView):

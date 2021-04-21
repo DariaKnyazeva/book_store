@@ -38,7 +38,7 @@ class Price(models.Model):
     )
     amount = models.DecimalField(max_digits=6, decimal_places=2, default=1.0,
                                  validators=[MinValueValidator(0.01)],
-                                 help_text="The price amount for the period unit")
+                                 help_text="The minimum price amount for the period unit")
     currency = models.ForeignKey(Currency, on_delete=models.PROTECT)
     period = models.PositiveSmallIntegerField(choices=PRICE_PERIODS,
                                               default=PricePeriod.DAY)
@@ -49,6 +49,11 @@ class Price(models.Model):
 
 class Category(Price):
     name = models.CharField(max_length=100)
+    changed_amount = models.DecimalField(max_digits=6, decimal_places=2, default=1.0,
+                                         validators=[MinValueValidator(0.01)],
+                                         help_text="The charge after period limit is hit")
+    period_limit = models.PositiveSmallIntegerField(default=1,
+                                                    help_text="The amount of period units after that the price changes")
 
     class Meta:
         ordering = ["name", ]
