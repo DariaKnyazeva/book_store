@@ -1,5 +1,3 @@
-from django.utils import timezone
-
 from pricing.models import Currency
 from .models import BookRent
 
@@ -19,16 +17,17 @@ class Recipe:
         """
         The rent is calculated on the basis of the number of books rented
         and durations for each book it was rented.
-        Per day rental charge is $ 1.
+        The rent is also category specific and it changes after days limit is hit.
+        There is also a minimum charge limit per category.
         """
-        today = timezone.now().date()
-        return sum([((today - rent.created).days + 1) * rent.book.category.amount for rent in self.rents])
+        price = sum([rent.price_per_book for rent in self.rents])
+        return price
 
     def get_price(self):
         """
         Returns string representation of price with the currency symbol
         """
-        # TODO: the currency has to be customizable
+        # TODO: the currency has to be customizable based on the Book store
         currency = Currency.get_default_currency()
         price = self.caclulate_price()
         return f"{currency.symbol} {price:.2f}"
