@@ -27,6 +27,17 @@ class UserManager(DjangoUserManager):
         user.save(using=self._db)
         return user
 
+    def create_superuser(self, username, user_role=UserRole.STORE_OWNER, email=None, password=None):
+        """
+        Creates and saves a User with the given username, email and password.
+        By default creates Customer user
+        """
+        user = self.create_user(username=username, user_role=user_role, email=email, password=password)
+        user.is_staff = True
+        user.is_superuser = True
+        user.save()
+        return user
+
     def create_customer(self, username, email=None, password=None):
         return self.create_user(username, email=email, password=password)
 

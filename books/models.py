@@ -35,8 +35,11 @@ class BookRent(models.Model):
 
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     book = models.ForeignKey(Book, on_delete=models.PROTECT)
-    created = models.DateField(auto_now_add=True)
-    end_date = models.DateField(null=True)
+    # do not like this solution for 'created',
+    # got read of "auto_now_add" only for the purpose
+    # of creating "several days before" rents in Django Admin
+    created = models.DateField(default=timezone.now().date())
+    end_date = models.DateField(null=True, blank=True)
     status = models.PositiveSmallIntegerField(default=Status.PENDING)
 
     def __str__(self):
