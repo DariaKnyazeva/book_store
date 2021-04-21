@@ -52,11 +52,6 @@ class TestBookRentApi(TestCase):
 
         for rent_detail in content:
             self.assertEqual(user_url, rent_detail['customer'])
-            print(rent_detail)
-            # if book_detail['id'] == rent1.id:
-            #     self.assertEqual(book_detail['title'], book1.title)
-            # else:
-            #     self.assertEqual(book_detail['title'], book2.title)
 
     def test_book_rents(self):
         """

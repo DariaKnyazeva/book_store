@@ -1,3 +1,5 @@
+import random
+
 from books.models import Book, BookRent
 from pricing.models import Currency, Category
 from users.models import User
@@ -17,8 +19,25 @@ class Command(BaseCommand):
         Book.objects.all().delete()
         Category.objects.all().delete()
 
-        currency = Currency.get_default_currency()
-        price, _cr = Category.objects.get_or_create(currency=currency, amount=1, name="novel")
+        curr = Currency.get_default_currency()
+
+        reg, _ = Category.objects.get_or_create(
+            name="Regular", amount=1.0, changed_amount=1.5,
+            period_limit=2,
+            currency=curr
+        )
+        fic, _ = Category.objects.get_or_create(
+            name="Fiction", amount=4.5, changed_amount=5,
+            currency=curr,
+            period_limit=3,
+        )
+        nov, _ = Category.objects.get_or_create(
+            name="Novel", amount=1.5, changed_amount=2.0,
+            currency=curr,
+            period_limit=2
+        )
+
+        cats = [reg, fic, nov]
 
         now = timezone.now()
         User.objects.get(username="daria").delete()
@@ -30,14 +49,14 @@ class Command(BaseCommand):
 
         fake = Faker()
         Book.objects.bulk_create([
-            Book(title=fake.sentence(), price=price)
+            Book(title=fake.sentence(), category=random.choice(cats))
             for _ in range(10_000)
         ])
 
         z_books = Book.objects.filter(title__startswith="Abl")
         print("Create {} rents".format(z_books.count()))
         for book in z_books:
-            rent = BookRent.objects.create(book=book, customer=user, price=price,
+            rent = BookRent.objects.create(book=book, customer=user,
                                            status=BookRent.Status.RENTED)
             rent.created = now - timedelta(days=2)
             rent.save()
