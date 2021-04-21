@@ -21,6 +21,13 @@ introduced as $ 4.5 if days rented is less than 3 days.
 
 Please see the [pull requests](https://github.com/DariaKnyazeva/book_store/pulls) for the history
 
+## IMPORTANT NOTE
+
+The app allows to rent books without specifying the amount of days.
+The price is calculated based on the amount of days since rent time till today.
+In the demo user there are "old" records to demonstrate.
+Or, you can change BookRent.created in Django Admin.
+
 The app is running at [http://116.202.124.180:8090/](http://116.202.124.180:8090/)
 
 ### users
