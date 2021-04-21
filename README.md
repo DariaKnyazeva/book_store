@@ -20,3 +20,24 @@ considered as $ 2 if days rented is less than 2 days. Similarly for Novel minimu
 introduced as $ 4.5 if days rented is less than 3 days.
 
 Please see the [pull requests](https://github.com/DariaKnyazeva/book_store/pulls) for the history
+
+The app is running at [http://116.202.124.180:8090/](http://116.202.124.180:8090/)
+
+### users
+
+Please use superuser credentials to access Django admin:
+
+username = test_admin
+password = helloworld123
+
+There is a test user with preset rents, for the demo:
+
+username = daria
+password = qwerty
+
+Or, you can register your own user.
+
+### coverage
+
+The tests coverage is at [http://116.202.124.180:8090/coverage/](http://116.202.124.180:8090/coverage/)
+

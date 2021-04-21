@@ -11,3 +11,7 @@ class IndexView(TemplateView):
             return redirect('books:book-list')
 
         return super().dispatch(request, *args, **kwargs)
+
+
+class CoverageView(TemplateView):
+    template_name = 'coverage/index.html'

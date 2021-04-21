@@ -10,4 +10,9 @@ urlpatterns = [
         views.IndexView.as_view(),
         name='index',
     ),
+    path(
+        'coverage/',
+        views.CoverageView.as_view(),
+        name='coverage',
+    ),
 ]
