@@ -1,13 +1,15 @@
-from books.models import BookRent
+from books.models import BookRent, Book
 
 from rest_framework import serializers
 
 
 class BookRentSerializer(serializers.HyperlinkedModelSerializer):
+    book = serializers.HyperlinkedRelatedField(view_name='books-api:book', queryset=Book.objects.all())
+
     class Meta:
         model = BookRent
         fields = (
             'id',
-            'customer', 'book', 'created',
-            'price', 'end_date', 'status',
+            'book', 'created',
+            'end_date', 'status',
         )
