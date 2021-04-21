@@ -26,6 +26,7 @@ API_VERSION = 'v1'
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    re_path('^accounts/', admin.site.urls),
     path('users/', include('users.urls')),
     path('', include('ui.urls')),
     path('book/', include('books.urls')),

@@ -1,8 +1,10 @@
 <ul class="nav navbar-nav">
+{% if request.user.is_authenticated %}
    <li>
        <a href="{% url 'books:book-list' %}">Book List</a>
    </li>
    <li>
        <a href ="{% url 'books:book-recipe' %}">My recipe</a>
    </li>
+{% endif %}
 </ul>
