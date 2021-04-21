@@ -13,7 +13,7 @@ __all__ = [
 
 class ListCreateBookView(generics.ListCreateAPIView):
     serializer_class = BookSerializer
-    queryset = Book.objects.all()
+    queryset = Book.objects.all().order_by('title')
 
 
 class RetrieveBookView(generics.RetrieveAPIView):

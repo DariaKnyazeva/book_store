@@ -18,47 +18,8 @@ class TestBookRecipe(TestCase):
         self.customer = mommy.make(User)
         self.currency = mommy.make(Currency, symbol="$")
 
-    def test_calculate_price(self):
-        """
-        Make sure that the recipy inclused the amount of books and the amount of days
-        """
-        price = mommy.make(Category, amount=1,
-                           period_limit=10,
-                           currency=self.currency)
-
         today = timezone.now().date()
 
-        # rented today
-        rent = BookRent.objects.create(customer=self.customer,
-                                       status=BookRent.Status.RENTED,
-                                       book=mommy.make(Book, category=price))
-        self.assertEqual(1, rent.days_rented)
-        # the minimum amount is 1 * 10 days
-        charge = rent.price_per_book
-        self.assertEqual(10, charge[0])
-        self.assertEqual("Rented for 1 days: $ 10 minimum charge", charge[1])
-
-        # rented yesterday
-        rent = BookRent.objects.create(customer=self.customer,
-                                       status=BookRent.Status.RENTED,
-                                       book=mommy.make(Book, category=price))
-        # Have to set up created because it is auto set to today on creation
-        rent.created = today - timedelta(days=1)
-        rent.save()
-        self.assertEqual(2, rent.days_rented)
-        charge = rent.price_per_book
-        self.assertEqual(10, charge[0])
-        self.assertEqual("Rented for 2 days: $ 10 minimum charge", charge[1])
-
-        recipe = Recipe(self.customer)
-        self.assertEqual(20.00, recipe.caclulate_price())
-
-    def test_calculate_price_categories(self):
-        """
-        Make sure that the recipy inclused
-        the amount of books and the amount of days
-        for different categories
-        """
         price_regular = mommy.make(Category, amount=1.5, name="Regular",
                                    period_limit=10,
                                    currency=self.currency)
@@ -69,42 +30,45 @@ class TestBookRecipe(TestCase):
                                  period_limit=10,
                                  currency=self.currency)
 
-        today = timezone.now().date()
+        self.today_regular_rent = BookRent.objects.create(customer=self.customer,
+                                                          status=BookRent.Status.RENTED,
+                                                          book=mommy.make(Book, category=price_regular))
+        self.yesterday_fiction_rent = BookRent.objects.create(customer=self.customer,
+                                                              status=BookRent.Status.RENTED,
+                                                              book=mommy.make(Book, category=price_fiction))
+        self.yesterday_fiction_rent.created = today - timedelta(days=1)
+        self.yesterday_fiction_rent.save()
+        self.yesterday_novel_rent = BookRent.objects.create(customer=self.customer,
+                                                            status=BookRent.Status.RENTED,
+                                                            book=mommy.make(Book, category=price_novel))
+        self.yesterday_novel_rent.created = today - timedelta(days=1)
+        self.yesterday_novel_rent.save()
 
-        # rented today
-        rent = BookRent.objects.create(customer=self.customer,
-                                       status=BookRent.Status.RENTED,
-                                       book=mommy.make(Book, category=price_regular))
-        charge = rent.price_per_book
+    def test_days_rented(self):
+        self.assertEqual(1, self.today_regular_rent.days_rented)
+        self.assertEqual(2, self.yesterday_fiction_rent.days_rented)
+
+    def test_price_regular(self):
+        """
+        Make sure that the recipy inclused
+        the amount of books and the amount of days
+        for different categories
+        """
+        charge = self.today_regular_rent.price_and_details
         self.assertEqual(15, charge[0])
         self.assertEqual("Rented for 1 days: $ 15.0 minimum charge", charge[1])
 
-        # rented yesterday
-        rent = BookRent.objects.create(customer=self.customer,
-                                       status=BookRent.Status.RENTED,
-                                       book=mommy.make(Book, category=price_fiction))
-        # Have to set up created because it is auto set to today on creation
-        rent.created = today - timedelta(days=1)
-        rent.save()
-        charge = rent.price_per_book
+    def test_price_fiction(self):
+        charge = self.yesterday_fiction_rent.price_and_details
         self.assertEqual(30, charge[0])
         self.assertEqual("Rented for 2 days: $ 30 minimum charge", charge[1])
 
-        # rented yesterday
-        rent = BookRent.objects.create(customer=self.customer,
-                                       status=BookRent.Status.RENTED,
-                                       book=mommy.make(Book, category=price_novel, title="A"))
-        rent.created = today - timedelta(days=1)
-        rent.save()
-        charge = rent.price_per_book
+    def test_price_novel(self):
+        charge = self.yesterday_novel_rent.price_and_details
         self.assertEqual(15, charge[0])
         self.assertEqual("Rented for 2 days: $ 15.0 minimum charge", charge[1])
-        self.assertEqual(f"{rent.book.title} (Novel): {charge[1]}", str(rent))
-
-        recipe = Recipe(self.customer)
-        # 1.5 + 2 * 3 + 2 * 1.5 = 60
-        # 15 + 30 + 15 = 45
-        self.assertEqual(60, recipe.caclulate_price())
+        self.assertEqual(f"{self.yesterday_novel_rent.book.title} (Novel): {charge[1]}",
+                         str(self.yesterday_novel_rent))
 
     def test_calculate_price_hit_limit(self):
         """
@@ -124,10 +88,11 @@ class TestBookRecipe(TestCase):
         rent.created = today - timedelta(days=10)
         rent.save()
         # 1.5 * 2 + 2.0 * 9 = 21.0
-        charge = rent.price_per_book
+        charge = rent.price_and_details
         self.assertEqual(21, charge[0])
         self.assertEqual("Rented for 11 days: $ 1.5 for 2 + $ 2.0 for 9 days", charge[1])
 
-    def test_get_price(self):
+    def test_get_price_repr(self):
         recipe = Recipe(self.customer)
-        self.assertEqual("$ 0.00", recipe.get_price())
+        # sum of all of the customer's rents
+        self.assertEqual("$ 60.00", recipe.get_price_repr())

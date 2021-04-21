@@ -4,7 +4,7 @@ from .models import BookRent
 
 class Recipe:
     """
-    Service class to calculate Customer's recipe
+    Service class to calculate Customer's receipt
     """
 
     def __init__(self, customer):
@@ -20,10 +20,10 @@ class Recipe:
         The rent is also category specific and it changes after days limit is hit.
         There is also a minimum charge limit per category.
         """
-        price = sum([rent.price_per_book[0] for rent in self.rents])
+        price = sum(rent.price_and_details[0] for rent in self.rents)
         return price
 
-    def get_price(self):
+    def get_price_repr(self):
         """
         Returns string representation of price with the currency symbol
         """

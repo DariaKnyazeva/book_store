@@ -40,7 +40,10 @@ class Command(BaseCommand):
         cats = [reg, fic, nov]
 
         now = timezone.now()
-        User.objects.get(username="daria").delete()
+        try:
+            User.objects.get(username="daria").delete()
+        except User.DoesNotExist:
+            pass
         user = User(username="daria",
                     is_staff=True, is_active=True, is_superuser=True,
                     last_login=now, date_joined=now, user_role=1)
@@ -53,9 +56,9 @@ class Command(BaseCommand):
             for _ in range(10_000)
         ])
 
-        z_books = Book.objects.filter(title__startswith="Abl")
-        print("Create {} rents".format(z_books.count()))
-        for book in z_books:
+        books = Book.objects.filter(title__startswith="Abl")
+        print(f"Create {books.count()} rents")
+        for book in books:
             rent = BookRent.objects.create(book=book, customer=user,
                                            status=BookRent.Status.RENTED)
             rent.created = now - timedelta(days=2)

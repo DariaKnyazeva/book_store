@@ -3,16 +3,9 @@ from django.db import models
 from django.utils import timezone
 
 
-# class Author(models.Model):
-#     name = models.CharField(max_length=255)
-
-# TODO: add Author later
-
-
 class Book(models.Model):
     title = models.CharField(max_length=255)
     category = models.ForeignKey('pricing.Category', on_delete=models.CASCADE)
-    # author = models.ForeignKey(Author, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ["title", ]
@@ -27,23 +20,23 @@ class BookRent(models.Model):
         RENTED = 1
         RETURNED = 2
 
-    STATUS_NAMES = {
-        Status.PENDING: 'pending',
-        Status.RENTED: 'rented',
-        Status.RETURNED: 'returned',
-    }
-
     customer = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.PROTECT)
     book = models.ForeignKey(Book, on_delete=models.PROTECT)
-    # do not like this solution for 'created',
-    # got read of "auto_now_add" only for the purpose
-    # of creating "several days before" rents in Django Admin
+    # got rid of "auto_now_add" to edit "created" in Django Admin
     created = models.DateField(default=timezone.now().date())
     end_date = models.DateField(null=True, blank=True)
     status = models.PositiveSmallIntegerField(default=Status.PENDING)
 
     def __str__(self):
-        return f"{self.book}: {self.price_per_book[1]}"
+        return f"{self.book}: {self.price_and_details[1]}"
+
+    def get_status_name(self):
+        status2name = {
+            self.PENDING: "pending",
+            self.RENTED: "rented",
+            self.RETURNED: "returned"
+        }
+        return status2name[self.status]
 
     @property
     def days_rented(self):
@@ -53,7 +46,7 @@ class BookRent(models.Model):
         return 0
 
     @property
-    def price_per_book(self):
+    def price_and_details(self):
         days = self.days_rented
         cat = self.book.category
         curr = cat.currency.symbol

@@ -27,7 +27,7 @@ class TestBookRentApi(TestCase):
     def test_book_rents_empty_list(self):
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        self.assertEqual([], json.loads(response.content)['results'])
+        self.assertListEqual([], json.loads(response.content)['results'])
 
     def test_book_rents_other_user(self):
         """
@@ -46,7 +46,7 @@ class TestBookRentApi(TestCase):
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
         content = json.loads(response.content)['results']
-        self.assertEqual([], content)
+        self.assertListEqual([], content)
 
         user_url = "http://testserver" + reverse("users-api:user", kwargs={"pk": user.id})
 

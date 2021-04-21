@@ -13,7 +13,7 @@ __all__ = [
 
 class ListCreateCurrencyView(generics.ListCreateAPIView):
     serializer_class = CurrencySerializer
-    queryset = Currency.objects.all()
+    queryset = Currency.objects.all().order_by('id')
 
 
 class RetrieveCurrencyView(generics.RetrieveAPIView):

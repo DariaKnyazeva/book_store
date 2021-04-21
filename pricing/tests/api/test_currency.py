@@ -34,24 +34,25 @@ class TestCurrencyApi(TestCase):
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
         content = json.loads(response.content)
-        self.assertEqual([], content['results'])
+        self.assertListEqual([], content['results'])
 
     def test_currencies(self):
         self.login_user()
 
         currency1 = Currency.get_default_currency()
-        mommy.make(Currency, code="GBP", name="Pound sterning", symbol="£")
+        currency2 = mommy.make(Currency, code="GBP", name="Pound sterling", symbol="£")
 
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
         content = json.loads(response.content)
         self.assertEqual(2, len(content['results']))
 
-        for detail in content['results']:
-            if detail['id'] == currency1.id:
-                self.assertEqual(detail['code'], "USD")
-            else:
-                self.assertEqual(detail['code'], "GBP")
+        expected = [
+            {'id': currency1.id, 'name': 'US Dollar', 'code': 'USD', 'symbol': '$'},
+            {'id': currency2.id, 'name': 'Pound sterling', 'code': 'GBP', 'symbol': '£'}
+        ]
+
+        self.assertListEqual(expected, content['results'])
 
     def test_currency_create(self):
         objects_count = Currency.objects.count()

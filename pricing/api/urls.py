@@ -6,9 +6,9 @@ app_name = 'pricing-api'
 
 
 urlpatterns = [
-    path('currency/', views.ListCreateCurrencyView.as_view(), name='currency'),
-    path('currency/<int:pk>/', views.RetrieveCurrencyView.as_view(), name='currency'),
+    path('currencies/', views.ListCreateCurrencyView.as_view(), name='currency'),
+    path('currencies/<int:pk>/', views.RetrieveCurrencyView.as_view(), name='currency'),
 
-    path('category/', views.ListCreatePriceView.as_view(), name='category'),
-    path('category/<int:pk>/', views.RetrievePriceView.as_view(), name='category'),
+    path('categories/', views.ListCreatePriceView.as_view(), name='category'),
+    path('categories/<int:pk>/', views.RetrievePriceView.as_view(), name='category'),
 ]

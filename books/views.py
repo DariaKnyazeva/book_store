@@ -21,10 +21,9 @@ class PaginationMixin:
         context = super().get_context_data(**kwargs)
         context['pagination_url'] = self.get_pagination_url()
         params = self.request.META.get('QUERY_STRING', '')
-        params = params.split('&')
-        if params and params[0].startswith('page'):
-            params.pop(0)
-        params = '&'.join(params)
+        first, *rest = params.split("&", maxsplit=1)
+        if first.startswith("page"):
+            params = rest[0] if rest else []
         context['params'] = params
         return context
 
@@ -36,11 +35,8 @@ class SearchViewMixin(PaginationMixin):
         """
         Instantiates the form the class should use to process the search query.
         """
-        data = self.get_initial()
-        kwargs = {}
-        kwargs.update(self.get_form_kwargs())
-
-        return self.form_class(data=data, **kwargs)
+        return self.form_class(data=self.get_initial(),
+                               **self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -70,11 +66,6 @@ class BookListView(SearchViewMixin, ListView):
     model = Book
     template_name = 'book_store/book_list.html'
     form_class = BookSearchForm
-
-    def get_initial(self):
-        return {
-            'q': self.request.GET.get('q', ''),
-        }
 
     def get_pagination_url(self):
         return reverse('books:book-list')
