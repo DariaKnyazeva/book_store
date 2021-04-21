@@ -18,7 +18,7 @@ class TestBookApi(TestCase):
     def test_books_empty_list(self):
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        self.assertEqual([], json.loads(response.content))
+        self.assertEqual([], json.loads(response.content)['results'])
 
     def test_books(self):
         category = mommy.make(Category, name="Regular")
@@ -27,7 +27,7 @@ class TestBookApi(TestCase):
 
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        content = json.loads(response.content)
+        content = json.loads(response.content)['results']
         self.assertEqual(2, len(content))
 
         category_url = "http://testserver" + reverse("pricing-api:category", kwargs={"pk": category.id})

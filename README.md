@@ -41,3 +41,7 @@ Or, you can register your own user.
 
 The tests coverage is at [http://116.202.124.180:8090/coverage/](http://116.202.124.180:8090/coverage/)
 
+Swgagger
+
+The swagger is at [http://116.202.124.180:8090/swagger/](http://116.202.124.180:8090/swagger/)
+

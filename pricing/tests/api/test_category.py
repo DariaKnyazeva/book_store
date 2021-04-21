@@ -19,7 +19,7 @@ class TestCategoryApi(TestCase):
         Currency.objects.all().delete()
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        self.assertEqual([], json.loads(response.content))
+        self.assertEqual([], json.loads(response.content)['results'])
 
     def test_categories(self):
         Category.objects.all().delete()
@@ -30,7 +30,7 @@ class TestCategoryApi(TestCase):
 
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        content = json.loads(response.content)
+        content = json.loads(response.content)['results']
         self.assertEqual(1, len(content))
         self.assertEqual(cat.id, content[0]['id'])
         self.assertEqual("Fiction", content[0]['name'])

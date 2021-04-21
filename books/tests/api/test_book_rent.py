@@ -17,7 +17,7 @@ class TestBookRentApi(TestCase):
 
     def login_user(self):
         password = "test"
-        self.user = User.objects.create(is_active=True, username="test", user_role=1, password=password)
+        self.user, _ = User.objects.get_or_create(is_active=True, username="test", user_role=1, password=password)
         self.user.set_password(password)
         self.user.save()
 
@@ -27,7 +27,7 @@ class TestBookRentApi(TestCase):
     def test_book_rents_empty_list(self):
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        self.assertEqual([], json.loads(response.content))
+        self.assertEqual([], json.loads(response.content)['results'])
 
     def test_book_rents_other_user(self):
         """
@@ -45,7 +45,7 @@ class TestBookRentApi(TestCase):
 
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        content = json.loads(response.content)
+        content = json.loads(response.content)['results']
         self.assertEqual([], content)
 
         user_url = "http://testserver" + reverse("users-api:user", kwargs={"pk": user.id})
@@ -70,7 +70,7 @@ class TestBookRentApi(TestCase):
 
         response = self.client.get(self.api_url)
         self.assertEqual(200, response.status_code)
-        content = json.loads(response.content)
+        content = json.loads(response.content)['results']
         self.assertEqual(1, len(content))
 
         book_url = "http://testserver" + reverse("books-api:book", kwargs={"pk": book1.id})
