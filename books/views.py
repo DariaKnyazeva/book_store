@@ -1,5 +1,6 @@
 # from django_filters.views import FilterView
 from django.conf import settings
+from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django.views.generic.base import TemplateView
@@ -25,6 +26,31 @@ class PaginationMixin:
         if first.startswith("page"):
             params = rest[0] if rest else []
         context['params'] = params
+
+        paginator = Paginator(self.model.objects.all(), 1)
+
+        try:
+            page = int(self.request.GET.get('page', '1'))
+        except TypeError:
+            page = 1
+
+        try:
+            objs = paginator.page(page)
+        except(EmptyPage, InvalidPage):
+            objs = paginator.page(1)
+
+        # Get the index of the current page
+        index = objs.number - 1
+        limit = 15
+
+        index = int(self.request.GET.get('page', '1'))
+        max_index = len(paginator.page_range)
+
+        start_index = index - limit if index >= limit else 0
+        end_index = index + limit if index <= max_index - limit else max_index
+        page_range = list(paginator.page_range)[start_index:end_index]
+        context['page_range'] = page_range
+
         return context
 
 
@@ -67,6 +93,11 @@ class BookListView(SearchViewMixin, ListView):
     template_name = 'book_store/book_list.html'
     form_class = BookSearchForm
 
+    def get_queryset(self):
+        rented_books = BookRent.objects.filter(customer=self.request.user,
+                                               status=BookRent.Status.RENTED).values_list("book_id")
+        return Book.objects.exclude(id__in=rented_books)
+
     def get_pagination_url(self):
         return reverse('books:book-list')
 
@@ -94,7 +125,7 @@ class ReceitView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['rented_books'] = self.recipe.rents
-        context['price'] = self.recipe.get_price()
+        context['price'] = self.recipe.get_price_repr()
         return context
 
     def dispatch(self, *args, **kwargs):
