@@ -1,4 +1,5 @@
-# from django_filters.views import FilterView
+import logging
+
 from django.conf import settings
 from django.core.paginator import Paginator, EmptyPage, InvalidPage
 from django.http import HttpResponse
@@ -10,6 +11,9 @@ from django.urls import reverse
 from books.models import Book, BookRent
 from .recipe import Recipe
 from .forms import BookSearchForm
+
+
+logger = logging.getLogger(__name__)
 
 
 class PaginationMixin:
@@ -27,7 +31,7 @@ class PaginationMixin:
             params = rest[0] if rest else []
         context['params'] = params
 
-        paginator = Paginator(self.model.objects.all(), 1)
+        paginator = Paginator(self.get_queryset(), self.paginate_by)
 
         try:
             page = int(self.request.GET.get('page', '1'))
@@ -41,7 +45,7 @@ class PaginationMixin:
 
         # Get the index of the current page
         index = objs.number - 1
-        limit = 15
+        limit = 12
 
         index = int(self.request.GET.get('page', '1'))
         max_index = len(paginator.page_range)
@@ -93,10 +97,10 @@ class BookListView(SearchViewMixin, ListView):
     template_name = 'book_store/book_list.html'
     form_class = BookSearchForm
 
-    def get_queryset(self):
-        rented_books = BookRent.objects.filter(customer=self.request.user,
-                                               status=BookRent.Status.RENTED).values_list("book_id")
-        return Book.objects.exclude(id__in=rented_books)
+    # def get_queryset(self):
+    #     rented_books = BookRent.objects.filter(customer=self.request.user,
+    #                                            status=BookRent.Status.RENTED).values_list("book_id")
+    #     return Book.objects.exclude(id__in=rented_books)
 
     def get_pagination_url(self):
         return reverse('books:book-list')
